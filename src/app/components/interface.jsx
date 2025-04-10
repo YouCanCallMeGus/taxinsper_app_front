@@ -12,26 +12,44 @@ const Interface = () => {
     const [cost, setCost] = useState(0)
     const [speed, setSpeed] = useState(1)
     const [path, setPath] = useState([])
+    const [taxiPos, setTaxi] = useState([])
+    const [passengerPos, setPassenger] = useState([])
+    const [destPos, setDest] = useState([])
+   
     
+    // try connection with backend
+    // success: set pathing
+    // fail: logs error
     function search () {
-        axios.post("http://localhost:5000/taxi",{"map":maps}).then((response) => {
+        axios.post("http://localhost:5000/taxi",{"map":maps, "cost": cost, "taxiPos": taxiPos, "passengerPos":passengerPos, "destPos": destPos}).then((response) => {
             const fullPath = response.data.path;
-            console.log(response.data.cost);
-            
-            setCost(response.data.cost)
-            fullPath.forEach(([i, j], index) => {
-                setTimeout(() => {
-                    setPath(prev => [prev, [i, j]]);
-                }, index * (1000/speed)); 
-            });
+           
+            if (response.data.message == null) {
+                setTaxi([]);
+                fullPath.forEach(([i, j], index) => {
+                    setTimeout(() => {
+                        if (passengerPos[0] == i && passengerPos[1] == j) {
+                            setPassenger([])
+                        }
+                        if (destPos[0] == i && destPos[1] == j && passengerPos.length == 0) {
+                            setDest([])
+                        }
+                        setPath(prev => [prev, [i, j]]);
+                    }, index * (1000/speed)); 
+                });
+            }
+            else {
+                alert(`${response.data.message}`)
+            }
         }).catch((error) => {
             console.log(error)
         })
     } 
 
+    //sets map dimension
     function setDim(value, type) {
         const numValue = Number(value)
-        if (numValue <31 && numValue > 0) {
+        if (numValue <41 && numValue > 0) {
             if (type == "row") {
                 setRow(value);
             }
@@ -40,14 +58,47 @@ const Interface = () => {
             }
         }
     }
-    
+    // sets the matrix i,j value according to the tile map or sets the taxi/passenger/destination pos
     function setTileValue(i,j, newValue) {
-        const updated = [...maps];
-        updated[i] = [...updated[i]];
-        updated[i][j] = newValue;
-        setMap(updated)
+        if (newValue < 4) {
+            const updated = [...maps];
+            updated[i] = [...updated[i]];
+            updated[i][j] = newValue;
+            setMap(updated)
+        }
+        else {
+            if (fieldType === "taxi") {
+                setTaxi([i,j])
+                setPath([])
+                if (taxiPos[0] == destPos[0] && taxiPos[1] == destPos[1]) {
+                    setDest([])
+                }
+                if (taxiPos[0] == passengerPos[0] && taxiPos[1] == passengerPos[1]) {
+                    setPassenger([])
+                }
+            }
+            if (fieldType === "passenger") {
+                setPassenger([i,j])
+                if (passengerPos[0] == destPos[0] && passengerPos[1] == destPos[1]) {
+                    setDest([])
+                }
+                if (passengerPos[0] == taxiPos[0] && passengerPos[1] == taxiPos[1]) {
+                    setTaxi([])
+                }
+            }
+            if (fieldType === "dest") {
+                setDest([i,j])
+                if (destPos[0] == passengerPos[0] && destPos[1] == passengerPos[1]) {
+                    setPassenger([])
+                }
+                if (destPos[0] == taxiPos[0] && destPos[1] == taxiPos[1]) {
+                    setTaxi([])
+                }
+            }
+        }
     }
 
+    // keeps updating the map
     useEffect(() => {
         setMap(
             Array.from({ length: row }, () => Array.from({ length: column }, () => 0))
@@ -74,6 +125,18 @@ const Interface = () => {
                             onMouseEnter={(element) => {element.target.style.backgroundColor = "#964B00"}}
                             onMouseLeave={(element) => {element.target.style.backgroundColor = "white"}}
                             >terra</button>
+                    <button onClick={() => setFieldType("taxi")} 
+                            onMouseEnter={(element) => {element.target.style.backgroundColor = "#964B00"}}
+                            onMouseLeave={(element) => {element.target.style.backgroundColor = "white"}}
+                            >taxi</button>
+                    <button onClick={() => setFieldType("passenger")} 
+                            onMouseEnter={(element) => {element.target.style.backgroundColor = "#964B00"}}
+                            onMouseLeave={(element) => {element.target.style.backgroundColor = "white"}}
+                            >passageiro</button>
+                    <button onClick={() => setFieldType("dest")} 
+                            onMouseEnter={(element) => {element.target.style.backgroundColor = "#964B00"}}
+                            onMouseLeave={(element) => {element.target.style.backgroundColor = "white"}}
+                            >destino</button>
                 </div>
                 <div className="headerright">
                     <label>linhas</label>
@@ -85,15 +148,10 @@ const Interface = () => {
                 </div>
             </header>
             <div className="subheader">
+                <label>custo</label>
+                <input onChange={(c)=>{setCost(c.target.value)}} type="number"/>
                 <button onClick={() => search()} style={{
                 }}>busca</button>
-                <div style={{
-                    border:"1px solid black",
-                    width: "100px",
-                    
-                }}>
-                    {`${cost}`}
-                </div>
             </div>
             
 
@@ -105,11 +163,21 @@ const Interface = () => {
             }}>
                 {maps.map((row, rowIndex) => 
                     row.map((value, columnIndex) => 
-                        <Tile key={`(${rowIndex}, ${columnIndex})`} 
-                            value={value} 
-                            type={`${fieldType}`} 
-                            setFieldValue={(newValue) => setTileValue(rowIndex,columnIndex,newValue)} 
-                            isPath={path.some(([i, j]) => i === rowIndex && j === columnIndex)}/>
+                        {
+                            return <Tile key={`(${rowIndex}, ${columnIndex})`} 
+                                        value={value} 
+                                        type={`${fieldType}`} 
+                                        setFieldValue={(newValue) => {
+                                            setTileValue(rowIndex,columnIndex,newValue)
+                                        }} 
+                                        isPath={path.some(([i, j]) => i === rowIndex && j === columnIndex)}
+                                        taxi = {taxiPos}
+                                        passenger = {passengerPos}
+                                        dest = {destPos}
+                                        i = {rowIndex}
+                                        j = {columnIndex}
+                                    />
+                        }
                 ))}
             </div>
             
