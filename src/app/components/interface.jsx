@@ -52,14 +52,13 @@ const Interface = () => {
     //sets map dimension
     function setDim(value, type) {
         const numValue = Number(value)
-        if (numValue <41 && numValue > 0) {
-            if (type == "row") {
-                setRow(value);
-            }
-            if (type == "column") {
-                setColumn(value)
-            }
+        if (type == "row") {
+            setRow(numValue);
         }
+        if (type == "column") {
+            setColumn(numValue)
+        }
+        
     }
     // sets the matrix i,j value according to the tile map or sets the taxi/passenger/destination pos
     function setTileValue(i,j, newValue) {
@@ -73,30 +72,12 @@ const Interface = () => {
             if (fieldType === "taxi") {
                 setTaxi([i,j])
                 setPath([])
-                // if (taxiPos[0] == destPos[0] && taxiPos[1] == destPos[1]) {
-                //     setDest([])
-                // }
-                // if (taxiPos[0] == passengerPos[0] && taxiPos[1] == passengerPos[1]) {
-                //     setPassenger([])
-                // }
             }
             if (fieldType === "passenger") {
                 setPassenger([i,j])
-                // if (passengerPos[0] == destPos[0] && passengerPos[1] == destPos[1]) {
-                //     setDest([])
-                // }
-                // if (passengerPos[0] == taxiPos[0] && passengerPos[1] == taxiPos[1]) {
-                //     setTaxi([])
-                // }
             }
             if (fieldType === "dest") {
                 setDest([i,j])
-                // if (destPos[0] == passengerPos[0] && destPos[1] == passengerPos[1]) {
-                //     setPassenger([])
-                // }
-                // if (destPos[0] == taxiPos[0] && destPos[1] == taxiPos[1]) {
-                //     setTaxi([])
-                // }
             }
         }
     }
@@ -107,6 +88,9 @@ const Interface = () => {
             Array.from({ length: row }, () => Array.from({ length: column }, () => 0))
         );
         setPath([]);
+        setDest([])
+        setTaxi([])
+        setPassenger([])
         
     }, [row, column])
 
@@ -130,34 +114,55 @@ const Interface = () => {
                             onMouseEnter={(element) => {element.target.style.backgroundColor = "#964B00"}}
                             onMouseLeave={(element) => {element.target.style.backgroundColor = "white"}}
                             >terra</button>
-                    <button onClick={() => setFieldType("taxi")} 
-                            onMouseEnter={(element) => {element.target.style.backgroundColor = "#964B00"}}
-                            onMouseLeave={(element) => {element.target.style.backgroundColor = "white"}}
-                            >taxi</button>
-                    <button onClick={() => setFieldType("passenger")} 
-                            onMouseEnter={(element) => {element.target.style.backgroundColor = "#964B00"}}
-                            onMouseLeave={(element) => {element.target.style.backgroundColor = "white"}}
-                            >passageiro</button>
-                    <button onClick={() => setFieldType("dest")} 
-                            onMouseEnter={(element) => {element.target.style.backgroundColor = "#964B00"}}
-                            onMouseLeave={(element) => {element.target.style.backgroundColor = "white"}}
-                            >destino</button>
+                    <div className="hl-bottom">
+                            <button onClick={() => setFieldType("taxi")} 
+                                    onMouseEnter={(element) => {element.target.style.backgroundColor = "#964B00"}}
+                                    onMouseLeave={(element) => {element.target.style.backgroundColor = "white"}}
+                                    >taxi</button>
+                            <button onClick={() => setFieldType("passenger")} 
+                                    onMouseEnter={(element) => {element.target.style.backgroundColor = "#964B00"}}
+                                    onMouseLeave={(element) => {element.target.style.backgroundColor = "white"}}
+                                    >passageiro</button>
+                            <button onClick={() => setFieldType("dest")} 
+                                    onMouseEnter={(element) => {element.target.style.backgroundColor = "#964B00"}}
+                                    onMouseLeave={(element) => {element.target.style.backgroundColor = "white"}}
+                                    >destino</button>
+                    </div>
                 </div>
                 <div className="headerright">
-                    <label>linhas</label>
-                    <input onChange={(r)=>{setDim(r.target.value, "row")}} type="number"/>
-                    <label>colunas</label>
-                    <input onChange={(c)=>{setDim(c.target.value, "column")}} type="number"/>
-                    <label>velocidade</label>
-                    <input onChange={(s)=>{setSpeed(s.target.value)}} type="number"/>
+                    <div className="hr-top">
+                        <div className="inputfield">
+                            <label>linhas</label>
+                            <input onChange={(r)=>{
+                                const value = Math.max(0,Math.min(30,r.target.value))
+                                setDim(value, "row")
+                                }} type="number" min={0} max={30} placeholder="0" value={row}/>
+                        </div>
+                        <div className="inputfield">
+                            <label>colunas</label>
+                            <input onChange={(c)=>{
+                                const value = Math.max(0,Math.min(30,c.target.value))
+                                setDim(value, "column")
+                                }} type="number" min={0} max={30} placeholder="0" value={column}/>
+                        </div>
+                        <div className="inputfield">
+                            <label>velocidade</label>
+                            <input onChange={(s)=>{
+                                const value = Math.max(0,Math.min(100,s.target.value))
+                                setSpeed(value)
+                                }} type="number" min={1} max={100} placeholder="1" value={speed}/>
+                        </div>
+                    </div>
+                    <div className="hr-bottom">
+                        <div className="inputfield">
+                            <label>Valor da corrida</label>
+                            <input onChange={(c)=>{setCost(c.target.value)}} type="number" placeholder="0"/>
+                        </div>
+                        <button onClick={() => search()} style={{
+                        }}>busca</button>
+                    </div>
                 </div>
             </header>
-            <div className="subheader">
-                <label>custo</label>
-                <input onChange={(c)=>{setCost(c.target.value)}} type="number"/>
-                <button onClick={() => search()} style={{
-                }}>busca</button>
-            </div>
             
 
             <div className="city" style={{

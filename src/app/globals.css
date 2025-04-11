@@ -38,6 +38,37 @@ header {
   display: flex;
   margin-top: 20px;
   justify-content: center;
+  margin: 20px 5%;
+  padding: 20px;
+  border: 1px solid black;
+  border-radius: 5px;
+  box-shadow: 2px 2px 1px 1px gray;
+}
+
+.headerleft {
+  margin: 0 auto 0 0;
+  width: 50%;
+}
+
+.headerright {
+  margin: 0 0 0 auto;
+  display: block;
+  width: 50%;
+}
+
+.hr-top {
+  display: flex;
+}
+
+.hl-bottom, .hr-bottom {
+  margin-top: 10px;
+}
+.hr-bottom {
+  display: flex;
+}
+
+input, label {
+  display: block;
 }
 
 .subheader {
@@ -60,4 +91,5 @@ button:hover {
   transition: 0.2s ease;
   transform: scale(1.05);
   box-shadow: 2px 2px 1px 1px gray;
+  cursor: pointer;
 }
