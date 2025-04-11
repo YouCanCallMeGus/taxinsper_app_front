@@ -42,12 +42,23 @@ const Interface = () => {
                 });
             }
             else {
-                alert(`${response.data.message}`)
+                alert(`${response.data}`)
             }
-        }).catch((error) => {
-            alert(`${error.response.data.message}`)
+        }).catch((error) => {      
+            if (error.response.data.status == 400) {
+                alert(`${error.response.data}`)
+            } else {
+                console.log(error.response)
+                alert(`${error.response.data}`)
+            }   
         })
     } 
+
+    function resetBoard() {
+        setMap(
+            Array.from({ length: row }, () => Array.from({ length: column }, () => 0))
+        );
+    }
 
     //sets map dimension
     function setDim(value, type) {
@@ -101,52 +112,88 @@ const Interface = () => {
             <header>
                 <div className="headerleft">
                     <button onClick={() => setFieldType("water")} 
-                            onMouseEnter={(element) => {element.target.style.backgroundColor = "cyan"}}
-                            onMouseLeave={(element) => {element.target.style.backgroundColor = "white"}}
+                            // onMouseEnter={(element) => {element.target.style.backgroundColor = "cyan"}}
+                            // onMouseLeave={(element) => {element.target.style.backgroundColor = "white"}}
+                            
+                            style={{backgroundColor: fieldType == "water" ? "#51AFF7" : "white"}}
+                            onMouseEnter={(e) => fieldType != "water" ? e.target.style.backgroundColor = "#51AFF7" : "white"}
+                            onMouseLeave={(e) => fieldType != "water" ? e.target.style.backgroundColor = "white" : "#51AFF7"}
+
                             >agua</button>
+
                     <button onClick={() => setFieldType("wall")} 
-                            onMouseEnter={(element) => {element.target.style.backgroundColor = "black"; element.target.style.color = "white"}}
-                            onMouseLeave={(element) => {element.target.style.backgroundColor = "white"; element.target.style.color = "black"}}
+                            // onMouseEnter={(element) => {element.target.style.backgroundColor = "black"; element.target.style.color = "white"}}
+                            // onMouseLeave={(element) => {element.target.style.backgroundColor = "white"; element.target.style.color = "black"}}
+
+                            onMouseEnter={(e) => { e.target.style.backgroundColor = fieldType != "wall" ? "black" : "black"; e.target.style.color = "white";}}
+                            onMouseLeave={(e) => {e.target.style.backgroundColor = fieldType != "wall" ? "white" : "black";e.target.style.color = fieldType !== "wall" ? "black" : "white";}}
+                            style={{backgroundColor: fieldType == "wall" ? "black" : "white",color: fieldType == "wall" ? "white" : "black",}}
+                            
                             >parede</button>
+
                     <button onClick={() => setFieldType("empty")} 
+                            style={{backgroundColor: fieldType == "empty" ? "#D6DDE2" : "white"}}
+                            onMouseEnter={(e) => fieldType != "empty" ? e.target.style.backgroundColor = "#D6DDE2" : "white"}
+                            onMouseLeave={(e) => fieldType != "empty" ? e.target.style.backgroundColor = "white" : "#D6DDE2"}
                             >livre</button>
-                    <button onClick={() => setFieldType("dirt")} 
-                            onMouseEnter={(element) => {element.target.style.backgroundColor = "#964B00"}}
-                            onMouseLeave={(element) => {element.target.style.backgroundColor = "white"}}
+
+                    <button onClick={() => setFieldType("dirt")}
+                            // onMouseEnter={(element) => {element.target.style.backgroundColor = "#964B00"}}
+                            // onMouseLeave={(element) => {element.target.style.backgroundColor = "white"}}
+
+                            style={{backgroundColor: fieldType == "dirt" ? "#b88b5c" : "white"}}
+                            onMouseEnter={(e) => fieldType != "dirt" ? e.target.style.backgroundColor = "#b88b5c" : "white"}
+                            onMouseLeave={(e) => fieldType != "dirt" ? e.target.style.backgroundColor = "white" : "#b88b5c"}
                             >terra</button>
+
                     <div className="hl-bottom">
                             <button onClick={() => setFieldType("taxi")} 
-                                    onMouseEnter={(element) => {element.target.style.backgroundColor = "#964B00"}}
-                                    onMouseLeave={(element) => {element.target.style.backgroundColor = "white"}}
+                                    // onMouseEnter={(element) => {element.target.style.backgroundColor = "yellow"}}
+                                    // onMouseLeave={(element) => {element.target.style.backgroundColor = "white"}}
+
+                                    style={{backgroundColor: fieldType == "taxi" ? "yellow" : "white"}}
+                                    onMouseEnter={(e) => fieldType != "taxi" ? e.target.style.backgroundColor = "yellow" : "white"}
+                                    onMouseLeave={(e) => fieldType != "taxi" ? e.target.style.backgroundColor = "white" : "yellow"}
                                     >taxi</button>
+                                    
                             <button onClick={() => setFieldType("passenger")} 
-                                    onMouseEnter={(element) => {element.target.style.backgroundColor = "#964B00"}}
-                                    onMouseLeave={(element) => {element.target.style.backgroundColor = "white"}}
+                                    // onMouseEnter={(element) => {element.target.style.backgroundColor = "white"}}
+                                    // onMouseLeave={(element) => {element.target.style.backgroundColor = "white"}}
+
+                                    style={{backgroundColor: fieldType == "passenger" ? "#D6DDE2" : "white"}}
+                                    onMouseEnter={(e) => fieldType != "passenger" ? e.target.style.backgroundColor = "#D6DDE2" : "white"}
+                                    onMouseLeave={(e) => fieldType != "passenger" ? e.target.style.backgroundColor = "white" : "#D6DDE2"}
                                     >passageiro</button>
+
                             <button onClick={() => setFieldType("dest")} 
-                                    onMouseEnter={(element) => {element.target.style.backgroundColor = "#964B00"}}
-                                    onMouseLeave={(element) => {element.target.style.backgroundColor = "white"}}
+                                    // onMouseEnter={(element) => {element.target.style.backgroundColor = "white"}}
+                                    // onMouseLeave={(element) => {element.target.style.backgroundColor = "white"}}
+
+                                    style={{backgroundColor: fieldType == "dest" ? "#D6DDE2" : "white"}}
+                                    onMouseEnter={(e) => fieldType != "dest" ? e.target.style.backgroundColor = "#D6DDE2" : "white"}
+                                    onMouseLeave={(e) => fieldType != "dest" ? e.target.style.backgroundColor = "white" : "#D6DDE2"}
                                     >destino</button>
+
                     </div>
                 </div>
                 <div className="headerright">
                     <div className="hr-top">
                         <div className="inputfield">
-                            <label>linhas</label>
+                            <label>Linhas</label>
                             <input onChange={(r)=>{
                                 const value = Math.max(0,Math.min(30,r.target.value))
                                 setDim(value, "row")
                                 }} type="number" min={0} max={30} placeholder="0" value={row}/>
                         </div>
                         <div className="inputfield">
-                            <label>colunas</label>
+                            <label>Colunas</label>
                             <input onChange={(c)=>{
                                 const value = Math.max(0,Math.min(30,c.target.value))
                                 setDim(value, "column")
                                 }} type="number" min={0} max={30} placeholder="0" value={column}/>
                         </div>
                         <div className="inputfield">
-                            <label>velocidade</label>
+                            <label>Velocidade</label>
                             <input onChange={(s)=>{
                                 const value = Math.max(0,Math.min(100,s.target.value))
                                 setSpeed(value)
@@ -156,10 +203,14 @@ const Interface = () => {
                     <div className="hr-bottom">
                         <div className="inputfield">
                             <label>Valor da corrida</label>
-                            <input onChange={(c)=>{setCost(c.target.value)}} type="number" placeholder="0"/>
+                            <input onChange={(c)=>{setCost(c.target.value)}} type="number" placeholder="0" min={0}/>
                         </div>
                         <button onClick={() => search()} style={{
+                            backgroundColor: "#90EE90"
                         }}>busca</button>
+                        <button onClick={() => resetBoard()} style={{
+                            backgroundColor: "#FF6961"
+                        }}>reiniciar</button>
                     </div>
                 </div>
             </header>
