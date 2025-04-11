@@ -24,7 +24,7 @@ const Interface = () => {
         axios.post("https://taxinsper-app-back.onrender.com/taxi",{"map":maps, "cost": cost, "taxiPos": taxiPos, "passengerPos":passengerPos, "destPos": destPos}).then((response) => {
             const fullPath = response.data.path;
             setPassengerTaxi(false)
-            
+
             if (response.data.message == null) {
                 setTaxi([]);
                 fullPath.forEach(([i, j], index) => {
@@ -112,8 +112,7 @@ const Interface = () => {
             <header>
                 <div className="headerleft">
                     <button onClick={() => setFieldType("water")} 
-                            // onMouseEnter={(element) => {element.target.style.backgroundColor = "cyan"}}
-                            // onMouseLeave={(element) => {element.target.style.backgroundColor = "white"}}
+                            
                             
                             style={{backgroundColor: fieldType == "water" ? "#51AFF7" : "white"}}
                             onMouseEnter={(e) => fieldType != "water" ? e.target.style.backgroundColor = "#51AFF7" : "white"}
@@ -122,9 +121,7 @@ const Interface = () => {
                             >agua</button>
 
                     <button onClick={() => setFieldType("wall")} 
-                            // onMouseEnter={(element) => {element.target.style.backgroundColor = "black"; element.target.style.color = "white"}}
-                            // onMouseLeave={(element) => {element.target.style.backgroundColor = "white"; element.target.style.color = "black"}}
-
+                            
                             onMouseEnter={(e) => { e.target.style.backgroundColor = fieldType != "wall" ? "black" : "black"; e.target.style.color = "white";}}
                             onMouseLeave={(e) => {e.target.style.backgroundColor = fieldType != "wall" ? "white" : "black";e.target.style.color = fieldType !== "wall" ? "black" : "white";}}
                             style={{backgroundColor: fieldType == "wall" ? "black" : "white",color: fieldType == "wall" ? "white" : "black",}}
@@ -138,9 +135,7 @@ const Interface = () => {
                             >livre</button>
 
                     <button onClick={() => setFieldType("dirt")}
-                            // onMouseEnter={(element) => {element.target.style.backgroundColor = "#964B00"}}
-                            // onMouseLeave={(element) => {element.target.style.backgroundColor = "white"}}
-
+                            
                             style={{backgroundColor: fieldType == "dirt" ? "#b88b5c" : "white"}}
                             onMouseEnter={(e) => fieldType != "dirt" ? e.target.style.backgroundColor = "#b88b5c" : "white"}
                             onMouseLeave={(e) => fieldType != "dirt" ? e.target.style.backgroundColor = "white" : "#b88b5c"}
@@ -148,27 +143,21 @@ const Interface = () => {
 
                     <div className="hl-bottom">
                             <button onClick={() => setFieldType("taxi")} 
-                                    // onMouseEnter={(element) => {element.target.style.backgroundColor = "yellow"}}
-                                    // onMouseLeave={(element) => {element.target.style.backgroundColor = "white"}}
-
+                                
                                     style={{backgroundColor: fieldType == "taxi" ? "yellow" : "white"}}
                                     onMouseEnter={(e) => fieldType != "taxi" ? e.target.style.backgroundColor = "yellow" : "white"}
                                     onMouseLeave={(e) => fieldType != "taxi" ? e.target.style.backgroundColor = "white" : "yellow"}
                                     >taxi</button>
                                     
                             <button onClick={() => setFieldType("passenger")} 
-                                    // onMouseEnter={(element) => {element.target.style.backgroundColor = "white"}}
-                                    // onMouseLeave={(element) => {element.target.style.backgroundColor = "white"}}
-
+                                 
                                     style={{backgroundColor: fieldType == "passenger" ? "#D6DDE2" : "white"}}
                                     onMouseEnter={(e) => fieldType != "passenger" ? e.target.style.backgroundColor = "#D6DDE2" : "white"}
                                     onMouseLeave={(e) => fieldType != "passenger" ? e.target.style.backgroundColor = "white" : "#D6DDE2"}
                                     >passageiro</button>
 
                             <button onClick={() => setFieldType("dest")} 
-                                    // onMouseEnter={(element) => {element.target.style.backgroundColor = "white"}}
-                                    // onMouseLeave={(element) => {element.target.style.backgroundColor = "white"}}
-
+                               
                                     style={{backgroundColor: fieldType == "dest" ? "#D6DDE2" : "white"}}
                                     onMouseEnter={(e) => fieldType != "dest" ? e.target.style.backgroundColor = "#D6DDE2" : "white"}
                                     onMouseLeave={(e) => fieldType != "dest" ? e.target.style.backgroundColor = "white" : "#D6DDE2"}
@@ -203,7 +192,10 @@ const Interface = () => {
                     <div className="hr-bottom">
                         <div className="inputfield">
                             <label>Valor da corrida</label>
-                            <input onChange={(c)=>{setCost(c.target.value)}} type="number" placeholder="0" min={0}/>
+                            <input onChange={(c)=>{
+                                const value = Math.max(0, Math.min(Number.POSITIVE_INFINITY,c.target.value))
+                                setCost(value)
+                                }} type="number" placeholder="0" min={0} value={cost}/>
                         </div>
                         <button onClick={() => search()} style={{
                             backgroundColor: "#90EE90"
