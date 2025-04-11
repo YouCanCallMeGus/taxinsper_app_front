@@ -15,7 +15,7 @@ const Interface = () => {
     const [taxiPos, setTaxi] = useState([])
     const [passengerPos, setPassenger] = useState([])
     const [destPos, setDest] = useState([])
-   
+    const [isOnTaxi, setPassengerTaxi] = useState(false)
     
     // try connection with backend
     // success: set pathing
@@ -23,16 +23,19 @@ const Interface = () => {
     function search () {
         axios.post("http://localhost:5000/taxi",{"map":maps, "cost": cost, "taxiPos": taxiPos, "passengerPos":passengerPos, "destPos": destPos}).then((response) => {
             const fullPath = response.data.path;
-           
+            setPassengerTaxi(false)
+            
             if (response.data.message == null) {
                 setTaxi([]);
                 fullPath.forEach(([i, j], index) => {
                     setTimeout(() => {
                         if (passengerPos[0] == i && passengerPos[1] == j) {
                             setPassenger([])
+                            setPassengerTaxi(true)
                         }
-                        if (destPos[0] == i && destPos[1] == j && passengerPos.length == 0) {
+                        if (destPos[0] == i && destPos[1] == j && isOnTaxi) {
                             setDest([])
+                            setPassengerTaxi(false)
                         }
                         setPath(prev => [prev, [i, j]]);
                     }, index * (1000/speed)); 
@@ -42,7 +45,7 @@ const Interface = () => {
                 alert(`${response.data.message}`)
             }
         }).catch((error) => {
-            console.log(error)
+            alert(`${error.response.data.message}`)
         })
     } 
 
@@ -70,30 +73,30 @@ const Interface = () => {
             if (fieldType === "taxi") {
                 setTaxi([i,j])
                 setPath([])
-                if (taxiPos[0] == destPos[0] && taxiPos[1] == destPos[1]) {
-                    setDest([])
-                }
-                if (taxiPos[0] == passengerPos[0] && taxiPos[1] == passengerPos[1]) {
-                    setPassenger([])
-                }
+                // if (taxiPos[0] == destPos[0] && taxiPos[1] == destPos[1]) {
+                //     setDest([])
+                // }
+                // if (taxiPos[0] == passengerPos[0] && taxiPos[1] == passengerPos[1]) {
+                //     setPassenger([])
+                // }
             }
             if (fieldType === "passenger") {
                 setPassenger([i,j])
-                if (passengerPos[0] == destPos[0] && passengerPos[1] == destPos[1]) {
-                    setDest([])
-                }
-                if (passengerPos[0] == taxiPos[0] && passengerPos[1] == taxiPos[1]) {
-                    setTaxi([])
-                }
+                // if (passengerPos[0] == destPos[0] && passengerPos[1] == destPos[1]) {
+                //     setDest([])
+                // }
+                // if (passengerPos[0] == taxiPos[0] && passengerPos[1] == taxiPos[1]) {
+                //     setTaxi([])
+                // }
             }
             if (fieldType === "dest") {
                 setDest([i,j])
-                if (destPos[0] == passengerPos[0] && destPos[1] == passengerPos[1]) {
-                    setPassenger([])
-                }
-                if (destPos[0] == taxiPos[0] && destPos[1] == taxiPos[1]) {
-                    setTaxi([])
-                }
+                // if (destPos[0] == passengerPos[0] && destPos[1] == passengerPos[1]) {
+                //     setPassenger([])
+                // }
+                // if (destPos[0] == taxiPos[0] && destPos[1] == taxiPos[1]) {
+                //     setTaxi([])
+                // }
             }
         }
     }
@@ -106,6 +109,8 @@ const Interface = () => {
         setPath([]);
         
     }, [row, column])
+
+    
 
     return (
         <>
@@ -176,6 +181,7 @@ const Interface = () => {
                                         dest = {destPos}
                                         i = {rowIndex}
                                         j = {columnIndex}
+                                        passengerOnTaxi = {isOnTaxi}
                                     />
                         }
                 ))}

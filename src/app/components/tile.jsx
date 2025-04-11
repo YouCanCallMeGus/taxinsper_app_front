@@ -1,6 +1,6 @@
 "use client";
 
-const Tile = ({value, type = "empty", setFieldValue, isPath, taxi = [],passenger = [],dest = [], i,j}) => {
+const Tile = ({value, type = "empty", setFieldValue, isPath, taxi = [],passenger = [],dest = [], i,j, passengerOnTaxi}) => {
     const defaultColor = () => (value == 1?"black": value == 2? "blue": value==3? "#964B00": "white")
     const existTaxi = taxi[0] == i && taxi[1] == j
     const existPassenger = passenger[0] == i && passenger[1] == j
@@ -43,14 +43,29 @@ const Tile = ({value, type = "empty", setFieldValue, isPath, taxi = [],passenger
              }}
              onClick={() => setValue(type)}
              >
-                {isPath? (<img src="/img1.png" width={"39px"} height={"38px"}></img>)
-                : existTaxi ? (
-                <img src="/img1.png" width="39px" height="38px" />
-                ) : existPassenger ? (
-                <img src="/img2.png" width="39px" height="38px" />
-                ) : existDest ? (
-                <img src="/img3.png" width="39px" height="38px" />
-                ) : null}
+                
+                {isPath && passengerOnTaxi? (
+                    <img src="/img4.png" width={"39px"} height={"38px"}></img>
+                ):
+                isPath? (
+                    <img src="/img1.png" width={"39px"} height={"38px"}></img>
+
+                ): 
+                existTaxi ? (
+                    <img src="/img1.png" width="39px" height="38px" />
+                ): 
+                existDest && existPassenger ? (
+                    <>
+                    <img src="/img2.png" width="19px" height="20px" />
+                    <img src="/img3.png" width="19px" height="20px" />
+                    </>
+                ): 
+                existDest ? (
+                    <img src="/img3.png" width="39px" height="38px" />
+                ): 
+                existPassenger ?
+                    <img src="/img2.png" width="39px" height="38px" />
+                : null}
 
         </div>
         </>
