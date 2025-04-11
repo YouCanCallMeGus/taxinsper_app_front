@@ -21,7 +21,7 @@ const Interface = () => {
     // success: set pathing
     // fail: logs error
     function search () {
-        axios.post("http://localhost:5000/taxi",{"map":maps, "cost": cost, "taxiPos": taxiPos, "passengerPos":passengerPos, "destPos": destPos}).then((response) => {
+        axios.post("https://taxinsper-app-back.onrender.com/taxi",{"map":maps, "cost": cost, "taxiPos": taxiPos, "passengerPos":passengerPos, "destPos": destPos}).then((response) => {
             const fullPath = response.data.path;
             setPassengerTaxi(false)
             
